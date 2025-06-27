@@ -48,7 +48,7 @@ function loadFromLocalStorage() {
         { text: "Do or do not. There is no try.", category: "Motivation" }
     ];
 
-    categories = savedCategories ? JSON.parse(savedCategories) : 
+    categories = savedCategories ? JSON.parse(savedCategories) :
         [...new Set(quotes.map(quote => quote.category))];
 
     if (lastFilter) {
@@ -198,33 +198,51 @@ function showStatus(message, type) {
     }, 4000);
 }
 
-async function fetchQuotesFromServer() {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-    const data = await response.json();
-    return {
-        quotes: data.slice(0, 3).map(post => ({ text: post.title, category: "Server" })),
-        lastModified: new Date().toISOString()
-    };
-}
-
-async function syncWithServer() {
+function syncQuotes() {
     showStatus("Syncing with server...", "success");
-    const serverData = await fetchQuotesFromServer();
 
-    if (!lastSyncTime || new Date(serverData.lastModified) > new Date(lastSyncTime)) {
-        const localModified = localStorage.getItem('localModified');
-        if (localModified && new Date(localModified) > new Date(lastSyncTime)) {
-            showConflictResolution(serverData.quotes);
-            return;
-        }
-        quotes.push(...serverData.quotes);
-        categories = [...new Set([...categories, ...serverData.quotes.map(q => q.category)])];
-        saveToLocalStorage();
-    }
+    fetch("https://jsonplaceholder.typicode.com/posts")
+        .then(response => response.json())
+        .then(serverData => {
+            const serverQuotes = serverData.slice(0, 3).map(post => ({
+                text: post.title,
+                category: "Server"
+            }));
 
-    lastSyncTime = new Date().toISOString();
-    saveLastSyncTime();
-    showStatus("Sync complete!", "success");
+            const localModified = localStorage.getItem('localModified');
+            const serverModified = new Date().toISOString();
+
+            if (lastSyncTime && localModified && new Date(localModified) > new Date(lastSyncTime)) {
+                showConflictResolution(serverQuotes);
+            } else {
+                quotes.push(...serverQuotes);
+                categories = [...new Set([...categories, ...serverQuotes.map(q => q.category)])];
+                saveToLocalStorage();
+                populateCategories();
+                showRandomQuote();
+                showStatus("Synced and merged with server!", "success");
+            }
+
+            lastSyncTime = serverModified;
+            saveLastSyncTime();
+
+            return fetch("https://jsonplaceholder.typicode.com/posts", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(quotes)
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("POST request failed");
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            showStatus("Error syncing with server", "error");
+        });
 }
 
 function showConflictResolution(serverQuotes) {
@@ -262,16 +280,17 @@ function setupEventListeners() {
     elements.importFile.addEventListener('change', importQuotes);
     elements.clearStorageBtn.addEventListener('click', clearAllQuotes);
     elements.categoryFilter.addEventListener('change', filterQuotes);
-    elements.syncNowBtn.addEventListener('click', syncWithServer);
+    elements.syncNowBtn.addEventListener('click', syncQuotes);
     elements.useLocal.addEventListener('click', () => resolveConflict('local'));
     elements.useServer.addEventListener('click', () => resolveConflict('server'));
 }
 
 function startSyncInterval() {
-    syncInterval = setInterval(syncWithServer, 30000);
+    syncInterval = setInterval(syncQuotes, 30000); // every 30 seconds
 }
 
 const exportToJsonFile = exportQuotes;
 const importFromJsonFile = importQuotes;
 
 init();
+
