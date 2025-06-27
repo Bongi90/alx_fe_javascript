@@ -76,8 +76,6 @@ function showRandomQuote() {
     const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
     const quote = filteredQuotes[randomIndex];
     displayQuote(quote);
-    
-    // Store in sessionStorage
     sessionStorage.setItem('lastQuote', JSON.stringify(quote));
 }
 
@@ -112,7 +110,6 @@ function addQuote() {
     const newQuote = { text, category };
     quotes.push(newQuote);
     
-    // Update categories if new
     if (!categories.includes(category)) {
         categories.push(category);
         populateCategories();
@@ -154,8 +151,6 @@ function importQuotes(event) {
             }
             
             quotes.push(...importedQuotes);
-            
-            // Update categories
             const newCategories = importedQuotes.map(q => q.category);
             categories = [...new Set([...categories, ...newCategories])];
             
@@ -171,7 +166,6 @@ function importQuotes(event) {
     reader.readAsText(file);
 }
 
-// Clear all quotes
 function clearAllQuotes() {
     if (quotes.length === 0) {
         showStatus("No quotes to clear!", "error");
@@ -188,10 +182,9 @@ function clearAllQuotes() {
     }
 }
 
-function simulateServerSync() {
+async function fetchQuotesFromServer() {
     return new Promise((resolve) => {
         setTimeout(() => {
-          
             const serverQuotes = JSON.parse(localStorage.getItem('serverQuotes')) || [];
             const serverModified = localStorage.getItem('serverModified') || new Date().toISOString();
             
@@ -214,4 +207,19 @@ function simulateServerSync() {
 }
 
 async function syncWithServer() {
-  
+    showStatus("Syncing with server...", "success");
+    
+    try {
+        const serverData = await fetchQuotesFromServer();
+        
+        if (!lastSyncTime || new Date(serverData.lastModified) > new Date(lastSyncTime)) {
+            const localModified = localStorage.getItem('localModified');
+            if (lastSyncTime && localModified && new Date(localModified) > new Date(lastSyncTime)) {
+                showConflictResolution(serverData.quotes);
+                return;
+            }
+            
+            mergeQuotes(serverData.quotes);
+        }
+        
+        lastSyncTime = new Date().toISOStri
