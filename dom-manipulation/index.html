@@ -2,68 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Enhanced Quote Generator</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-    #quoteDisplay { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; min-height: 100px; background-color: #f9f9f9; }
-    button, input, select { padding: 10px 15px; margin: 8px 0; border-radius: 4px; }
-    button { cursor: pointer; background-color: #4CAF50; color: white; border: none; }
-    button:hover { background-color: #45a049; }
-    input, select { width: 100%; box-sizing: border-box; border: 1px solid #ddd; }
-    .control-section { margin: 20px 0; padding: 15px; border-radius: 8px; background-color: #f0f0f0; }
-    .sync-status { padding: 10px; margin: 10px 0; border-radius: 4px; display: none; }
-    .success { background-color: #dff0d8; color: #3c763d; }
-    .error { background-color: #f2dede; color: #a94442; }
-    .conflict { background-color: #fcf8e3; color: #8a6d3b; }
+    body { font-family: Arial; max-width: 800px; margin: 20px auto; padding: 10px; }
+    #quoteDisplay { padding: 20px; border: 1px solid #ddd; min-height: 100px; background: #f9f9f9; margin-bottom: 10px; }
+    button, input, select { padding: 8px; margin: 5px 0; width: 100%; }
+    .control-section { margin-bottom: 15px; padding: 10px; background: #f0f0f0; }
+    .sync-status { display: none; padding: 10px; margin: 10px 0; }
+    .success { background: #dff0d8; color: #3c763d; }
+    .error { background: #f2dede; color: #a94442; }
+    .conflict { background: #fcf8e3; color: #8a6d3b; }
   </style>
 </head>
 <body>
   <h1>Enhanced Quote Generator</h1>
 
-  <!-- Sync status messages -->
-  <div class="sync-status" id="syncStatus"></div>
+  <div id="syncStatus" class="sync-status"></div>
 
-  <!-- Quote display and sync -->
   <div class="control-section">
-    <div id="quoteDisplay">Click "Show New Quote" to begin!</div>
+    <div id="quoteDisplay">Click "Show New Quote"!</div>
     <button id="newQuote">Show New Quote</button>
     <button id="syncNow">Sync Now</button>
   </div>
 
-  <!-- Filter section -->
   <div class="control-section">
     <h2>Filter Quotes</h2>
-    <select id="categoryFilter">
-      <option value="all">All Categories</option>
-    </select>
+    <select id="categoryFilter"><option value="all">All Categories</option></select>
   </div>
 
-  <!-- Add new quote -->
   <div class="control-section">
     <h2>Add New Quote</h2>
-    <input id="newQuoteText" type="text" placeholder="Enter quote text" />
-    <input id="newQuoteCategory" type="text" placeholder="Enter category" />
+    <input id="newQuoteText" type="text" placeholder="Quote text" />
+    <input id="newQuoteCategory" type="text" placeholder="Quote category" />
     <button id="addQuoteBtn">Add Quote</button>
   </div>
 
-  <!-- Import/export quotes -->
   <div class="control-section">
     <h2>Data Management</h2>
-    <button id="exportBtn">Export Quotes (JSON)</button>
+    <button id="exportBtn">Export Quotes</button>
     <input type="file" id="importFile" accept=".json" />
     <button id="clearStorage">Clear All Quotes</button>
   </div>
 
-  <!-- Conflict resolution UI -->
-  <div class="control-section" id="conflictResolution" style="display: none;">
+  <div class="control-section" id="conflictResolution" style="display:none;">
     <h2>Conflict Detected</h2>
     <p id="conflictMessage"></p>
-    <button id="useLocal">Keep My Changes</button>
-    <button id="useServer">Use Server Version</button>
+    <button id="useLocal">Use Local Data</button>
+    <button id="useServer">Use Server Data</button>
   </div>
 
-  <!-- Script -->
   <script src="script.js"></script>
 </body>
 </html>
