@@ -20,14 +20,18 @@
 </head>
 <body>
   <h1>Enhanced Quote Generator</h1>
+
+  <!-- Sync status messages -->
   <div class="sync-status" id="syncStatus"></div>
 
+  <!-- Quote display and sync -->
   <div class="control-section">
     <div id="quoteDisplay">Click "Show New Quote" to begin!</div>
     <button id="newQuote">Show New Quote</button>
     <button id="syncNow">Sync Now</button>
   </div>
 
+  <!-- Filter section -->
   <div class="control-section">
     <h2>Filter Quotes</h2>
     <select id="categoryFilter">
@@ -35,6 +39,7 @@
     </select>
   </div>
 
+  <!-- Add new quote -->
   <div class="control-section">
     <h2>Add New Quote</h2>
     <input id="newQuoteText" type="text" placeholder="Enter quote text" />
@@ -42,6 +47,7 @@
     <button id="addQuoteBtn">Add Quote</button>
   </div>
 
+  <!-- Import/export quotes -->
   <div class="control-section">
     <h2>Data Management</h2>
     <button id="exportBtn">Export Quotes (JSON)</button>
@@ -49,6 +55,7 @@
     <button id="clearStorage">Clear All Quotes</button>
   </div>
 
+  <!-- Conflict resolution UI -->
   <div class="control-section" id="conflictResolution" style="display: none;">
     <h2>Conflict Detected</h2>
     <p id="conflictMessage"></p>
@@ -56,6 +63,7 @@
     <button id="useServer">Use Server Version</button>
   </div>
 
+  <!-- Script -->
   <script src="script.js"></script>
 </body>
 </html>
